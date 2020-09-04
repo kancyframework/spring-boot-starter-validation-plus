@@ -24,11 +24,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(Assert.List.class)
 public @interface Assert {
 
+    /**
+     * SPEL表达式
+     * @return
+     */
     String value();
 
     boolean result() default true;
 
-    String message() default "{Assert.message}";
+    String message() default "";
 
     Class<?>[] groups() default {};
 
