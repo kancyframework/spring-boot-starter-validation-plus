@@ -2,7 +2,6 @@ package com.github.kancyframework.validationplus.config;
 
 import com.github.kancyframework.validationplus.validator.AssertConstraintValidator;
 import org.hibernate.validator.HibernateValidator;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
