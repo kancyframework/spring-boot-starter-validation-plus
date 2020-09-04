@@ -2,10 +2,12 @@ package javax.validation.constraints;
 
 import javax.validation.Payload;
 import java.lang.annotation.Documented;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -16,12 +18,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author kancy
  * @see 2020/9/4 11:19
  **/
-
+@Target({ FIELD, PARAMETER })
+@Retention(RUNTIME)
+@Documented
+@Repeatable(Assert.List.class)
 public @interface Assert {
 
     String value();
 
-    boolean result();
+    boolean result() default true;
 
     String message() default "{Assert.message}";
 
@@ -29,7 +34,7 @@ public @interface Assert {
 
     Class<? extends Payload>[] payload() default {};
 
-    @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+    @Target({FIELD, PARAMETER })
     @Retention(RUNTIME)
     @Documented
     @interface List {

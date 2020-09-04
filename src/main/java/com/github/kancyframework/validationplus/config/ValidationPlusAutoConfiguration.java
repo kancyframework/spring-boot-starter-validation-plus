@@ -1,8 +1,7 @@
 package com.github.kancyframework.validationplus.config;
 
-import com.github.kancyframework.validationplus.validator.AssertScriptConstraintValidator;
+import com.github.kancyframework.validationplus.validator.AssertConstraintValidator;
 import org.hibernate.validator.HibernateValidator;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -17,7 +16,6 @@ import javax.validation.ValidatorFactory;
  * @author kancy
  * @date 2020/8/8 10:11
  */
-@ConditionalOnClass(name="org.springframework.web.bind.annotation.Controller")
 @Configuration
 public class ValidationPlusAutoConfiguration {
 
@@ -39,8 +37,8 @@ public class ValidationPlusAutoConfiguration {
     }
 
     @Bean
-    public AssertScriptConstraintValidator assertScriptConstraintValidator(){
-        return new AssertScriptConstraintValidator();
+    public AssertConstraintValidator assertConstraintValidator(){
+        return new AssertConstraintValidator();
     }
     @Bean
     public ApplicationContextHolder applicationContextHolder(){
