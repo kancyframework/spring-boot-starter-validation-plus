@@ -49,7 +49,7 @@ public class EnumCheckConstraintValidator extends CheckEmptyConstraintValidator<
             return doValidByEnumClass(value);
         }
 
-        if(annotation.enumCode().length > 0){
+        if(annotation.enumCode().length > 0 || annotation.enumCodeString().length() > 0){
             return doValidByEnumCode(value);
         }
 
@@ -102,6 +102,9 @@ public class EnumCheckConstraintValidator extends CheckEmptyConstraintValidator<
      */
     private boolean doValidByEnumCode(Object value) {
         List<String> enumCodes = Arrays.asList(annotation.enumCode());
+        if (enumCodes.isEmpty()){
+            enumCodes.addAll(Arrays.asList(StringUtils.split(annotation.enumCodeString(), ",")));
+        }
         boolean isValid = enumCodes.contains(String.valueOf(value));
         return annotation.reverse()? !isValid : isValid;
     }

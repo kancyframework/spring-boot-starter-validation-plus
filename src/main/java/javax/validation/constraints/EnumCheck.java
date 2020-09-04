@@ -78,6 +78,13 @@ public @interface EnumCheck {
     String[] enumCode() default {};
 
     /**
+     * 枚举,逗号分隔
+     *
+     * @return
+     */
+    String enumCodeString() default "";
+
+    /**
      * 配置校验
      *
      * @return

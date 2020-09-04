@@ -271,7 +271,7 @@ public class IdCardUtils {
                 datePerMonth = 30;
                 break;
             case 2:
-                datePerMonth = ((iYear % 4 == 0 && iYear % 100 != 0) || (iYear % 400 == 0)) ? 29 : 28;
+                datePerMonth = (iYear % 4 == 0 && iYear % 100 != 0) || (iYear % 400 == 0) ? 29 : 28;
                 break;
             default:
                 datePerMonth = 31;
