@@ -1,7 +1,6 @@
 package com.github.kancyframework.validationplus.validator;
 
-import javax.validation.constraints.PaperNo;
-import com.github.kancyframework.validationplus.utils.IdCardUtils;
+import javax.validation.constraints.Md5;
 
 import java.util.regex.Pattern;
 
@@ -13,7 +12,7 @@ import java.util.regex.Pattern;
  * @author: kancy
  * @date: 2019/12/11 10:40
  **/
-public class PaperNoConstraintValidator extends CheckEmptyConstraintValidator<PaperNo, String> {
+public class Md5ConstraintValidator extends CheckEmptyConstraintValidator<Md5, String> {
 
     /**
      * 验证的值不为空时，验证结果
@@ -22,9 +21,6 @@ public class PaperNoConstraintValidator extends CheckEmptyConstraintValidator<Pa
      */
     @Override
     protected boolean check(String value) {
-        if (annotation.force()){
-            return IdCardUtils.validateCard(value);
-        }
         return Pattern.compile(annotation.regexp()).matcher(value).find();
     }
 

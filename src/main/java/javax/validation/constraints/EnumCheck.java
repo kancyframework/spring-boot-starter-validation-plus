@@ -62,13 +62,13 @@ public @interface EnumCheck {
      * 枚举校验的字段 （默认形式）
      * @return
      */
-    String enumField() default "code" ;
+    String enumField() default "code";
 
     /**
      * 枚举校验的方法
      * @return
      */
-    String enumMethod() default "" ;
+    String enumMethod() default "";
 
     /**
      * 枚举
