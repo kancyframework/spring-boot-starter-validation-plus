@@ -2,8 +2,8 @@ package com.github.kancyframework.validationplus.config;
 
 import com.github.kancyframework.validationplus.validator.AssertConstraintValidator;
 import org.hibernate.validator.HibernateValidator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import javax.validation.Validation;
@@ -16,7 +16,6 @@ import javax.validation.ValidatorFactory;
  * @author kancy
  * @date 2020/8/8 10:11
  */
-@Configuration
 public class ValidationPlusAutoConfiguration {
 
     @Bean
@@ -40,6 +39,7 @@ public class ValidationPlusAutoConfiguration {
     public AssertConstraintValidator assertConstraintValidator(){
         return new AssertConstraintValidator();
     }
+
     @Bean
     public ApplicationContextHolder applicationContextHolder(){
         return new ApplicationContextHolder();
