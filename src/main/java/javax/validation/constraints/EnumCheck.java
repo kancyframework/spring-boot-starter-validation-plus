@@ -71,6 +71,12 @@ public @interface EnumCheck {
     String enumMethod() default "";
 
     /**
+     * 使用枚举名称验证
+     * @return
+     */
+    boolean useEnumName() default false;
+
+    /**
      * 枚举
      *
      * @return

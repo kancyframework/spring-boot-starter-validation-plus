@@ -1,14 +1,13 @@
 package com.kancy.validationplus.demo.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.kancy.validationplus.demo.enums.ItemEnum;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Assert;
+import javax.validation.constraints.EnumCheck;
+import javax.validation.constraints.NotNullOrBlank;
+import javax.validation.constraints.NotNullOrEmpty;
 import java.io.Serializable;
 
 /**
@@ -19,10 +18,7 @@ import java.io.Serializable;
  * @description 由 Mybatisplus Code Generator 创建
  */
 @Data
-@NoArgsConstructor
-@Accessors(chain = true)
-@TableName("t_cust")
-public class Cust extends Model<Cust> implements Serializable {
+public class Cust implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -30,12 +26,22 @@ public class Cust extends Model<Cust> implements Serializable {
      */
     @Assert(value = "vcreditCustId < 10")
     @Assert(value = "vcreditCustId > 5")
-    @TableId
 	private Long vcreditCustId;
+
     /**
      * 是否删除
      */
     private Integer isDeleted;
+
+    @NotNullOrEmpty
+    private String notEmpty;
+
+    @NotNullOrBlank
+    private String notBlank;
+
+
+    @EnumCheck(enumClass = ItemEnum.class, useEnumName = true)
+    private String item;
 
     @Valid
     private User user;

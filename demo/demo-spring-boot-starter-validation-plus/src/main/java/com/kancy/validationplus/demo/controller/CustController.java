@@ -4,13 +4,13 @@ import com.kancy.validationplus.demo.entity.Cust;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.mica.core.result.R;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Assert;
-import java.util.List;
 
 /**
  * 用户表服务控制器
@@ -22,15 +22,13 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@Validated
 public class CustController {
 
     @PostMapping("/test")
-    public R test(@RequestBody Cust cust, String name){
+    public R<Object> test(@Validated @RequestBody Cust cust,
+                          @RequestParam /*@Assert("name != null") */String name){
         return R.success();
     }
 
-    @GetMapping("/test2")
-    public R test2(Cust cust, @Assert("name != null") String name){
-        return R.success();
-    }
 }
