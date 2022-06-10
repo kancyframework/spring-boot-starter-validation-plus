@@ -70,7 +70,7 @@ public abstract class HibernateConstraintValidator<A extends Annotation, T> impl
                 // 由于为值为空时导致的校验不通过
                 if (getEmptyResult()) {
                     context.disableDefaultConstraintViolation();
-                    String message = String.format("{%s.empty.message}", getAnnotationClassName());
+                    String message = String.format("{%s.empty.message}", getAnnotationClassSimpleName());
                     context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
                 }
             }
@@ -146,9 +146,9 @@ public abstract class HibernateConstraintValidator<A extends Annotation, T> impl
      * 获取注解类名
      * @return
      */
-    private String getAnnotationClassName() {
+    private String getAnnotationClassSimpleName() {
         Type typeArgument = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        return typeArgument.getTypeName();
+        return ((Class)typeArgument).getSimpleName();
     }
 
     protected String getValidBasePath(HibernateConstraintValidatorContext context) {
