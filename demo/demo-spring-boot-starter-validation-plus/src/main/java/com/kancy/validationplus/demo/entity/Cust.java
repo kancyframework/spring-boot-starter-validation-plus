@@ -4,10 +4,7 @@ import com.kancy.validationplus.demo.enums.ItemEnum;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Assert;
-import javax.validation.constraints.EnumCheck;
-import javax.validation.constraints.NotNullOrBlank;
-import javax.validation.constraints.NotNullOrEmpty;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 
 /**
@@ -38,6 +35,12 @@ public class Cust implements Serializable {
 
     @NotNullOrBlank
     private String notBlank;
+
+    @NotEmpty
+    private String notEmpty1;
+
+    @NotBlank
+    private String notBlank2;
 
 
     @EnumCheck(enumClass = ItemEnum.class, useEnumName = true)

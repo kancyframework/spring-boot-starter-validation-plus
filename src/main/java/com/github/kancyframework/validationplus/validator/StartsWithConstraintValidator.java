@@ -1,7 +1,7 @@
 package com.github.kancyframework.validationplus.validator;
 
-import javax.validation.constraints.SimpleEmail;
-
+import javax.validation.constraints.HeadTail;
+import javax.validation.constraints.StartsWith;
 import java.util.regex.Pattern;
 
 /**
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author: kancy
  * @date: 2019/12/11 10:40
  **/
-public class EmailConstraintValidator extends CheckEmptyConstraintValidator<SimpleEmail, String> {
+public class StartsWithConstraintValidator extends CheckEmptyConstraintValidator<StartsWith, String> {
 
     /**
      * 验证的值不为空时，验证结果
@@ -21,7 +21,8 @@ public class EmailConstraintValidator extends CheckEmptyConstraintValidator<Simp
      */
     @Override
     protected boolean check(String value) {
-        return Pattern.compile(annotation.regexp()).matcher(value).find();
+        // 开头
+        return value.startsWith(annotation.value());
     }
 
     /**

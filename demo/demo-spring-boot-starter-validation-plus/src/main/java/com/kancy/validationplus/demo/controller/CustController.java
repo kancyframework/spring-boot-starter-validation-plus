@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Assert;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNullOrBlank;
 
 /**
  * 用户表服务控制器
@@ -23,11 +25,29 @@ import javax.validation.constraints.Assert;
 @RequiredArgsConstructor
 @RestController
 @Validated
-public class CustController {
+public class CustController implements ExceptionHandlerController{
 
     @PostMapping("/test")
     public R<Object> test(@Validated @RequestBody Cust cust,
-                          @RequestParam /*@Assert("name != null") */String name){
+                          @RequestParam @Assert("name != null") String name){
+        return R.success();
+    }
+
+    @PostMapping("/test2")
+    public R<Object> test(@RequestParam @Assert("name != null") String name){
+        return R.success();
+    }
+
+    @PostMapping("/test3")
+    public R<Object> test3(@RequestParam @NotBlank String name){
+        return R.success();
+    }
+    @PostMapping("/test4")
+    public R<Object> test4(@RequestParam @Assert("#notin(name, 'A,B,9') and #start(name, 'a') and #end(name, 'b')") String name){
+        return R.success();
+    }
+    @PostMapping("/test5")
+    public R<Object> test5(@RequestParam("name") @NotNullOrBlank(message = "名称不能为空") String name){
         return R.success();
     }
 

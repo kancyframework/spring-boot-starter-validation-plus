@@ -1,6 +1,6 @@
 package javax.validation.constraints;
 
-import com.github.kancyframework.validationplus.validator.DateTimeCheckConstraintValidator;
+import com.github.kancyframework.validationplus.validator.TimeCheckConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -19,7 +19,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = { DateTimeCheckConstraintValidator.class })
+@Constraint(validatedBy = { TimeCheckConstraintValidator.class })
 public @interface TimeCheck {
     /**
      * 是否必填 默认是必填的

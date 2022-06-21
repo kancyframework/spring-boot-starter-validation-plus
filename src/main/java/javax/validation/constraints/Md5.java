@@ -39,7 +39,7 @@ public @interface Md5 {
      * ^([a-zA-Z0-9]{16}|[a-zA-Z0-9]{32})$
      * ^[a-zA-Z0-9]{32}$
      */
-    String regexp() default "^[a-zA-Z0-9]{32}$";
+    String regexp() default Regexps.md5;
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RUNTIME)

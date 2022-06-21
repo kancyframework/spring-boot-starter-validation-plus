@@ -20,14 +20,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Documented
 @Constraint(validatedBy = { EmailConstraintValidator.class })
-public @interface Email {
+public @interface SimpleEmail {
     /**
      * 是否必填 默认是必填的
      * @return
      */
     boolean required() default true;
 
-    String message() default "{Email.message}";
+    String message() default "{SimpleEmail.message}";
 
     Class<?>[] groups() default {};
 
@@ -36,12 +36,12 @@ public @interface Email {
     /**
      * @return the regular expression to match
      */
-    String regexp() default "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
+    String regexp() default Regexps.email;
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RUNTIME)
     @Documented
     @interface List {
-        Email[] value();
+        SimpleEmail[] value();
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.aop.framework.autoproxy.AbstractBeanFactoryAwareAdvis
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.Expression;
@@ -20,10 +21,12 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Assert;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
 
@@ -57,11 +60,23 @@ public class AssertConstraintValidator extends AbstractBeanFactoryAwareAdvisingP
         if (Objects.isNull(arguments) || arguments.length == 0){
             return invocation.proceed();
         }
-        String[] parameterNames = parameterNameDiscoverer.getParameterNames(invocation.getMethod());
 
-        Map<String, Object> rootMap = new HashMap<>(parameterNames.length);
-        for (int i = 0; i < parameterNames.length; i++) {
-            rootMap.put(parameterNames[i], arguments[i]);
+        Method invocationMethod = invocation.getMethod();
+        Parameter[] parameters = invocationMethod.getParameters();
+        String[] parameterNames = parameterNameDiscoverer.getParameterNames(invocationMethod);
+
+        Map<String, Object> rootMap = new HashMap<>(parameters.length);
+        for (int i = 0; i < parameters.length; i++) {
+            if (Objects.nonNull(parameterNames)){
+                rootMap.put(parameterNames[i], arguments[i]);
+            }
+            RequestParam annotation = parameters[i].getAnnotation(RequestParam.class);
+            if (Objects.nonNull(annotation)){
+                String parameterName = annotation.name();
+                if (StringUtils.hasText(parameterName)){
+                    rootMap.put(parameterName, arguments[i]);
+                }
+            }
         }
 
         for (int i = 0; i < arguments.length; i++) {
@@ -77,8 +92,10 @@ public class AssertConstraintValidator extends AbstractBeanFactoryAwareAdvisingP
             if (ClassUtils.isPrimitiveOrWrapper(argumentClass)
                     || Objects.equals(argumentClass, String.class)){
                 // 创建一个虚拟的容器EvaluationContext
-                StandardEvaluationContext ctx = new StandardEvaluationContext();
+                StandardEvaluationContext ctx = initStandardEvaluationContext();
                 ctx.setRootObject(rootMap);
+                // 这里很关键，如果没有配置MapAccessor，那么只能用['c']['a']这种解析方式
+                ctx.addPropertyAccessor(new MapAccessor());
                 doCheckParameter(ctx, invocation.getMethod().getParameters()[i], parameterNames[i]);
                 continue;
             }
@@ -87,13 +104,7 @@ public class AssertConstraintValidator extends AbstractBeanFactoryAwareAdvisingP
             List<AssertMetaData> metaDataList = getAssertMetaDatas(argumentClass);
             if (!CollectionUtils.isEmpty(metaDataList)) {
                 // 创建一个虚拟的容器EvaluationContext
-                StandardEvaluationContext ctx = new StandardEvaluationContext();
-                ReflectionUtils.doWithLocalMethods(argument.getClass(), method -> {
-                    if (Objects.equals(method.getReturnType(), Boolean.class)
-                            || Objects.equals(method.getReturnType(), boolean.class)){
-                        ctx.registerFunction(method.getName(), method);
-                    }
-                });
+                StandardEvaluationContext ctx = initStandardEvaluationContext();
                 // setRootObject并非必须；
                 // 一个EvaluationContext只能有一个RootObject，引用它的属性时，可以不加前缀
                 ctx.setRootObject(argument);
@@ -127,10 +138,20 @@ public class AssertConstraintValidator extends AbstractBeanFactoryAwareAdvisingP
         return invocation.proceed();
     }
 
+    private StandardEvaluationContext initStandardEvaluationContext() {
+        StandardEvaluationContext ctx = new StandardEvaluationContext();
+        ReflectionUtils.doWithLocalMethods(SpelTools.class, method -> {
+            ctx.registerFunction(method.getName(), method);
+            ctx.registerFunction(method.getName().toLowerCase(), method);
+            ctx.registerFunction(method.getName().toUpperCase(), method);
+        });
+        return ctx;
+    }
+
     private List<AssertMetaData> getAssertMetaDatas(Class<?> argumentClass) {
         List<AssertMetaData> assertMetaDataList = ASSERT_META_DATA_MAP.get(argumentClass);
         if (Objects.isNull(assertMetaDataList)){
-            synchronized (argumentClass){
+            synchronized (ASSERT_META_DATA_MAP){
                 assertMetaDataList = ASSERT_META_DATA_MAP.get(argumentClass);
                 if (Objects.isNull(assertMetaDataList)){
                     assertMetaDataList = new ArrayList<>();
@@ -167,6 +188,7 @@ public class AssertConstraintValidator extends AbstractBeanFactoryAwareAdvisingP
         for (Assert annotation : parameter.getAnnotationsByType(Assert.class)) {
             //表达式放置
             Expression exp = parser.parseExpression(annotation.value());
+
             //getValue有参数ctx，从新的容器中根据SpEL表达式获取所需的值
             boolean result = Objects.equals(exp.getValue(ctx, Boolean.class), annotation.result());
             if (!result) {
@@ -232,6 +254,81 @@ public class AssertConstraintValidator extends AbstractBeanFactoryAwareAdvisingP
 
         public void setValidObject(boolean validObject) {
             this.validObject = validObject;
+        }
+    }
+
+    public static class SpelTools{
+
+        public static boolean start(String object, Object sub){
+            return object.startsWith(String.valueOf(sub));
+        }
+        public static boolean end(String object, Object sub){
+            return object.endsWith(String.valueOf(sub));
+        }
+        public static boolean startsWith(String object, Object sub){
+            return object.startsWith(String.valueOf(sub));
+        }
+        public static boolean endsWith(String object, Object sub){
+            return object.endsWith(String.valueOf(sub));
+        }
+        public static boolean startWith(String object, Object sub){
+            return object.startsWith(String.valueOf(sub));
+        }
+        public static boolean endWith(String object, Object sub){
+            return object.endsWith(String.valueOf(sub));
+        }
+
+        public static boolean contains(String object, Object sub){
+            return object.contains(String.valueOf(sub));
+        }
+        public static boolean notContains(String object, Object sub){
+            return !contains(object, sub);
+        }
+
+        public static boolean in(Object object, Object list){
+            String value = String.valueOf(object);
+            if (list instanceof Collection){
+                Collection collection = (Collection) list;
+                return collection.stream().anyMatch(item->Objects.equals(value, String.valueOf(item)));
+            }
+            if (list instanceof String){
+                String collection = (String) list;
+                if (collection.contains(",")){
+                    return Arrays.asList(collection.split(",")).contains(value);
+                }
+                if (collection.contains("|")){
+                    return Arrays.asList(collection.split("[|]")).contains(value);
+                }
+                return Objects.equals(value, collection);
+            }
+            return true;
+        }
+
+        public static boolean notIn(Object object, Object list){
+            return !in(object, list);
+        }
+
+        public static boolean notNull(Object object){
+            return Objects.nonNull(object);
+        }
+        public static boolean notEmpty(Object object){
+            return StringUtils.hasLength(String.valueOf(object));
+        }
+        public static boolean notBlank(Object object){
+            return StringUtils.hasText(String.valueOf(object));
+        }
+        public static boolean range(Number object, Number start, Number end){
+            return object.doubleValue() >= start.doubleValue()
+                    && object.doubleValue() <= end.doubleValue();
+        }
+        public static boolean inRange(Number object, Number start, Number end){
+            return range(object, start, end);
+        }
+        public static boolean notRange(Number object, Number start, Number end){
+            return !range(object, start, end);
+        }
+        public static boolean notInRange(Number object, Number start, Number end){
+            return !range(object, start, end);
         }
     }
 }

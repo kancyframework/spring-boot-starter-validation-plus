@@ -45,7 +45,7 @@ public @interface IdCard {
     /**
      * @return the regular expression to match
      */
-    String regexp() default "^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$";
+    String regexp() default Regexps.idCardNo;
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RUNTIME)

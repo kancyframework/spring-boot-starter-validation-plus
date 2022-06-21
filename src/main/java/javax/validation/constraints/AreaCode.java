@@ -37,7 +37,7 @@ public @interface AreaCode {
     /**
      * @return the regular expression to match
      */
-    String regexp() default "^\\d{6}$";
+    String regexp() default Regexps.areaCode;
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RUNTIME)

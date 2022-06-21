@@ -96,7 +96,11 @@ public class ValidationUtils {
         public String getErrors(){
             StringBuilder sb = new StringBuilder();
             for (ErrorMessage error : errors) {
-                sb.append(error.getPropertyPath()).append(":").append(error.getMessage()).append(";");
+                if (error.getMessage().contains(String.format("[%s]", error.getPropertyPath()))){
+                    sb.append(error.getMessage()).append(";");
+                }else {
+                    sb.append(error.getPropertyPath()).append(":").append(error.getMessage()).append(";");
+                }
             }
             return sb.toString();
         }

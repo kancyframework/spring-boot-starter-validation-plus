@@ -33,7 +33,7 @@ public @interface ZipCode {
 
     Class<? extends Payload>[] payload() default {};
 
-    String regexp() default "^\\d{6}$";
+    String regexp() default Regexps.zipCode;
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RUNTIME)
